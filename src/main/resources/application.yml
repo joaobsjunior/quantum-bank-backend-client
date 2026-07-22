@@ -1,0 +1,23 @@
+server:
+  port: ${QUANTUM_BANK_CLIENT_PORT:8080}
+
+spring:
+  application:
+    name: quantum-bank-backend-client
+
+quantum-bank:
+  client:
+    # Gateway banking-listener origin. All banking calls go through the gateway.
+    gateway-base-url: ${QUANTUM_BANK_CLIENT_GATEWAY_BASE_URL:https://gateway-banking:8443}
+    # OAuth2 client-credentials token endpoint (local Keycloak).
+    token-uri: ${QUANTUM_BANK_CLIENT_TOKEN_URI:http://keycloak:8080/realms/quantum-bank-local/protocol/openid-connect/token}
+    client-id: ${QUANTUM_BANK_CLIENT_ID:quantum-bank-backend-client}
+    client-secret: ${QUANTUM_BANK_CLIENT_SECRET:change-me-local-only}
+    scope: ${QUANTUM_BANK_CLIENT_SCOPE:pix:write statements:read profile:read}
+    # PKI-issued service certificate keystore + CA truststore for gateway mTLS.
+    key-store: ${QUANTUM_BANK_CLIENT_KEY_STORE:/etc/quantum-bank/runtime/backend-client.p12}
+    key-store-password: ${QUANTUM_BANK_CLIENT_KEY_STORE_PASSWORD:changeit}
+    trust-store: ${QUANTUM_BANK_CLIENT_TRUST_STORE:/etc/quantum-bank/runtime/backend-client-truststore.p12}
+    trust-store-password: ${QUANTUM_BANK_CLIENT_TRUST_STORE_PASSWORD:changeit}
+    forbidden-direct-hosts:
+      - backend

@@ -1,0 +1,20 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_call:
+
+jobs:
+  docker-build-test-coverage:
+    name: Docker build, test & 100% coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # The multi-stage build stage compiles, runs the tests, and enforces the
+      # Kover 100% line-coverage gate — no host Java/Gradle toolchain needed.
+      - name: Build image (runs tests + coverage gate)
+        run: docker build --target build -t quantum-bank-backend-client:ci .

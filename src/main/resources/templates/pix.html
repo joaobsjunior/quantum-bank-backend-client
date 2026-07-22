@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Pix transfer — External Service Console</title>
+</head>
+<body>
+<h1>Pix transfer</h1>
+<p><a href="/" th:href="@{/}">&larr; Back to console</a></p>
+<form method="post" action="/pix" th:action="@{/pix}">
+    <p>
+        <label>Amount
+            <input type="number" name="amount" step="0.01" min="0.01" value="10.00" required/>
+        </label>
+    </p>
+    <p>
+        <label>Recipient key
+            <input type="text" name="recipientKey" value="alice@quantumbank.local" required/>
+        </label>
+    </p>
+    <p>
+        <label>Description
+            <input type="text" name="description" value="console transfer"/>
+        </label>
+    </p>
+    <p>
+        <label>Scenario
+            <select name="scenario">
+                <option value="SUCCESS">SUCCESS</option>
+                <option value="ERROR">ERROR</option>
+            </select>
+        </label>
+    </p>
+    <button type="submit">Submit Pix transfer</button>
+</form>
+</body>
+</html>

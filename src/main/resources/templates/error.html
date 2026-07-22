@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Error — External Service Console</title>
+</head>
+<body>
+<h1 th:text="|${flow} — error|">Flow error</h1>
+<p><a href="/" th:href="@{/}">&larr; Back to console</a></p>
+<p><strong>Message:</strong> <span th:text="${message}">error message</span></p>
+<p th:if="${correlationId}">
+    <strong>Correlation id:</strong> <span th:text="${correlationId}">correlation-id</span>
+</p>
+<div th:if="${problem}">
+    <h2>Problem details (RFC 9457)</h2>
+    <dl>
+        <dt>Type</dt>
+        <dd th:text="${problem.type}">type</dd>
+        <dt>Title</dt>
+        <dd th:text="${problem.title}">title</dd>
+        <dt>Status</dt>
+        <dd th:text="${problem.status}">status</dd>
+        <dt>Detail</dt>
+        <dd th:text="${problem.detail}">detail</dd>
+        <dt>Instance</dt>
+        <dd th:text="${problem.instance}">instance</dd>
+    </dl>
+</div>
+</body>
+</html>

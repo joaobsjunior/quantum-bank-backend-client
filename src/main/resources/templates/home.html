@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Quantum Bank — External Service Console</title>
+</head>
+<body>
+<h1>Quantum Bank — External Service Console</h1>
+<p>
+    Simulated external company service. Every flow below runs through the
+    KrakenD gateway using the service's OAuth2 client-credentials token and its
+    mTLS identity — there is no direct-to-backend path.
+</p>
+<h2>Available flows</h2>
+<ul>
+    <li><a href="/pix" th:href="@{/pix}">Pix transfer</a> (success/error scenario)</li>
+    <li>
+        <form method="post" action="/statement" th:action="@{/statement}">
+            <button type="submit">Run account statement</button>
+        </form>
+    </li>
+    <li>
+        <form method="post" action="/profile" th:action="@{/profile}">
+            <button type="submit">Run profile / registration data</button>
+        </form>
+    </li>
+</ul>
+</body>
+</html>

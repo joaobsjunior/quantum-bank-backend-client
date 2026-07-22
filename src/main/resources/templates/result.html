@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Result — External Service Console</title>
+</head>
+<body>
+<h1 th:text="|${flow} — result|">Flow result</h1>
+<p><a href="/" th:href="@{/}">&larr; Back to console</a></p>
+<dl>
+    <dt>Correlation id</dt>
+    <dd th:text="${correlationId}">correlation-id</dd>
+    <dt>HTTP status</dt>
+    <dd th:text="${status}">200</dd>
+    <dt>Gateway response body</dt>
+    <dd>
+        <pre th:text="${body}">{}</pre>
+    </dd>
+</dl>
+</body>
+</html>
