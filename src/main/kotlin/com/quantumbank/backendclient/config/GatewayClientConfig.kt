@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.client.JdkClientHttpRequestFactory
 import org.springframework.web.client.RestClient
+import java.net.http.HttpClient
 
 /**
  * Wires the gateway-fronted integration: an mTLS RestClient whose base URL is
@@ -24,26 +25,35 @@ class GatewayClientConfig {
             properties.gatewayBaseUrl,
             properties.forbiddenDirectHosts,
         )
-        val httpClient = MutualTlsClientFactory.createHttpClient(
-            properties.keyStore,
-            properties.keyStorePassword,
-            properties.trustStore,
-            properties.trustStorePassword,
-        )
         return RestClient.builder()
             .baseUrl(baseUrl)
-            .requestFactory(JdkClientHttpRequestFactory(httpClient))
+            .requestFactory(JdkClientHttpRequestFactory(mutualTlsHttpClient(properties)))
             .build()
     }
 
+    /**
+     * The token endpoint is reached with the same PKI trust anchors as the
+     * gateway, so the client secret only ever travels over a TLS session
+     * verified against the local CA.
+     */
     @Bean
     fun tokenProvider(properties: BackendClientProperties): TokenProvider =
         ClientCredentialsTokenProvider(
-            tokenRestClient = RestClient.builder().build(),
+            tokenRestClient = RestClient.builder()
+                .requestFactory(JdkClientHttpRequestFactory(mutualTlsHttpClient(properties)))
+                .build(),
             tokenUri = properties.tokenUri,
             clientId = properties.clientId,
             clientSecret = properties.clientSecret,
             scope = properties.scope,
+        )
+
+    private fun mutualTlsHttpClient(properties: BackendClientProperties): HttpClient =
+        MutualTlsClientFactory.createHttpClient(
+            properties.keyStore,
+            properties.keyStorePassword,
+            properties.trustStore,
+            properties.trustStorePassword,
         )
 
     @Bean

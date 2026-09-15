@@ -11,13 +11,19 @@ import java.net.URI
 object GatewayBaseUrlValidator {
 
     fun validate(gatewayBaseUrl: String, forbiddenDirectHosts: List<String>): String {
-        val host = try {
-            URI(gatewayBaseUrl).host
+        val uri = try {
+            URI(gatewayBaseUrl)
         } catch (ex: Exception) {
             throw ExternalIntegrationException("invalid gateway base URL '$gatewayBaseUrl': ${ex.message}")
         }
+        val host = uri.host
         if (host.isNullOrBlank()) {
             throw ExternalIntegrationException("gateway base URL '$gatewayBaseUrl' has no host")
+        }
+        if (!"https".equals(uri.scheme, ignoreCase = true)) {
+            throw ExternalIntegrationException(
+                "gateway base URL '$gatewayBaseUrl' must use https; the gateway path is mTLS only",
+            )
         }
         if (forbiddenDirectHosts.any { it.equals(host, ignoreCase = true) }) {
             throw ExternalIntegrationException(

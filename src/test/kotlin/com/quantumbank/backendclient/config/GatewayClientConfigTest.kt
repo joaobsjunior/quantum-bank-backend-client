@@ -19,7 +19,7 @@ class GatewayClientConfigTest {
         val material = TestCertificates.generate(dir)
         return BackendClientProperties(
             gatewayBaseUrl = "https://gateway-banking:8443",
-            tokenUri = "http://keycloak:8080/token",
+            tokenUri = "https://keycloak:8443/token",
             clientId = "quantum-bank-backend-client",
             clientSecret = "secret",
             scope = "pix:write",

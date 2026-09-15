@@ -12,9 +12,15 @@ RUN gradle --no-daemon dependencies >/dev/null 2>&1 || true
 COPY --chown=gradle:gradle src ./src
 RUN gradle --no-daemon check bootJar
 
-# --- Slim runtime image ---
+# --- Slim runtime image (non-root) ---
 FROM eclipse-temurin:17-jre AS runtime
 WORKDIR /app
-COPY --from=build /home/gradle/project/build/libs/*.jar app.jar
+
+RUN groupadd --system --gid 10001 quantumbank \
+    && useradd --system --uid 10001 --gid quantumbank --home-dir /app --shell /usr/sbin/nologin quantumbank
+
+COPY --from=build --chown=quantumbank:quantumbank /home/gradle/project/build/libs/*.jar app.jar
+
+USER quantumbank
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]

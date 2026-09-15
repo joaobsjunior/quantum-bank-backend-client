@@ -34,4 +34,13 @@ data class BackendClientProperties(
      * so the service can never bypass the gateway.
      */
     val forbiddenDirectHosts: List<String> = listOf("backend"),
-)
+) {
+    init {
+        require(clientSecret.isNotBlank()) {
+            "quantum-bank.client.client-secret is required (set QUANTUM_BANK_CLIENT_SECRET)"
+        }
+        require(tokenUri.startsWith("https://")) {
+            "quantum-bank.client.token-uri must use https; credentials are never sent in plaintext"
+        }
+    }
+}

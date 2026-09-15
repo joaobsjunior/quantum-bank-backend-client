@@ -23,6 +23,13 @@ class GatewayBaseUrlValidatorTest {
     }
 
     @Test
+    fun `rejects plaintext gateway urls`() {
+        assertThatThrownBy { GatewayBaseUrlValidator.validate("http://gateway-banking:8443", forbidden) }
+            .isInstanceOf(ExternalIntegrationException::class.java)
+            .hasMessageContaining("must use https")
+    }
+
+    @Test
     fun `rejects a url with no host`() {
         assertThatThrownBy { GatewayBaseUrlValidator.validate("not-a-url", forbidden) }
             .isInstanceOf(ExternalIntegrationException::class.java)

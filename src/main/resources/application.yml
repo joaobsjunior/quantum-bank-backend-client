@@ -1,5 +1,9 @@
 server:
   port: ${QUANTUM_BANK_CLIENT_PORT:8080}
+  error:
+    include-message: never
+    include-stacktrace: never
+    include-exception: false
 
 spring:
   application:
@@ -9,10 +13,11 @@ quantum-bank:
   client:
     # Gateway banking-listener origin. All banking calls go through the gateway.
     gateway-base-url: ${QUANTUM_BANK_CLIENT_GATEWAY_BASE_URL:https://gateway-banking:8443}
-    # OAuth2 client-credentials token endpoint (local Keycloak).
-    token-uri: ${QUANTUM_BANK_CLIENT_TOKEN_URI:http://keycloak:8080/realms/quantum-bank-local/protocol/openid-connect/token}
+    # OAuth2 client-credentials token endpoint (local Keycloak over TLS).
+    token-uri: ${QUANTUM_BANK_CLIENT_TOKEN_URI:https://keycloak:8443/realms/quantum-bank-local/protocol/openid-connect/token}
     client-id: ${QUANTUM_BANK_CLIENT_ID:quantum-bank-backend-client}
-    client-secret: ${QUANTUM_BANK_CLIENT_SECRET:change-me-local-only}
+    # No fallback on purpose: the service refuses to start without a secret.
+    client-secret: ${QUANTUM_BANK_CLIENT_SECRET:}
     scope: ${QUANTUM_BANK_CLIENT_SCOPE:pix:write statements:read profile:read}
     # PKI-issued service certificate keystore + CA truststore for gateway mTLS.
     key-store: ${QUANTUM_BANK_CLIENT_KEY_STORE:/etc/quantum-bank/runtime/backend-client.p12}
@@ -21,3 +26,8 @@ quantum-bank:
     trust-store-password: ${QUANTUM_BANK_CLIENT_TRUST_STORE_PASSWORD:changeit}
     forbidden-direct-hosts:
       - backend
+  console:
+    # Operator credentials for the web console. Both are mandatory; the console
+    # spends the service's OAuth2 and mTLS identity, so it is never anonymous.
+    username: ${QUANTUM_BANK_CONSOLE_USERNAME:}
+    password: ${QUANTUM_BANK_CONSOLE_PASSWORD:}
