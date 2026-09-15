@@ -5,6 +5,7 @@ import java.net.http.HttpClient
 import java.nio.file.Files
 import java.nio.file.Path
 import java.security.KeyStore
+import java.time.Duration
 import javax.net.ssl.KeyManagerFactory
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManagerFactory
@@ -36,7 +37,14 @@ object MutualTlsClientFactory {
         val sslContext = SSLContext.getInstance("TLS").apply {
             init(keyManagers, trustManagers, null)
         }
-        return HttpClient.newBuilder().sslContext(sslContext).build()
+        val parameters = sslContext.defaultSSLParameters.apply {
+            protocols = arrayOf("TLSv1.3", "TLSv1.2")
+        }
+        return HttpClient.newBuilder()
+            .sslContext(sslContext)
+            .sslParameters(parameters)
+            .connectTimeout(Duration.ofSeconds(10))
+            .build()
     }
 
     private fun loadKeyStore(path: String, password: String): KeyStore {
