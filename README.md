@@ -64,3 +64,13 @@ All configuration is supplied by container environment (no hard-coded secrets):
 Behavior is governed by the Spec Kit features in the superproject:
 `005-external-service-integration`, `001-backend-client-console`, and
 `004-deployment-infrastructure`.
+
+## Post-Quantum Transport
+
+`MutualTlsClientFactory` builds the gateway and token-endpoint clients on
+BouncyCastle BCJSSE (installed by `PostQuantumTls` before any socket exists):
+TLS 1.3 only, `mldsa65,mldsa87` signature schemes, `X25519MLKEM768` key
+exchange, the PKI-issued ML-DSA-65 service identity from `backend-client.p12`
+and the ML-DSA-87 anchors from `backend-client-truststore.p12`. There is no
+classical fallback: a missing, invalid or classical (RSA) identity fails closed,
+which `MutualTlsClientFactoryTest` proves with a real loopback ML-DSA handshake.
