@@ -11,9 +11,12 @@ import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManagerFactory
 
 /**
- * Builds an mTLS-capable [HttpClient] from the PKI-issued service keystore and
- * the truststore of CA anchors. Fail-closed: any missing or unreadable material
- * raises [MissingCredentialException] so the service never talks to the gateway
+ * Builds a post-quantum mTLS [HttpClient] from the PKI-issued ML-DSA-65
+ * service keystore and the truststore of ML-DSA-87 CA anchors. The context is
+ * requested explicitly from BCJSSE (TLS 1.3, `mldsa65`/`mldsa87` signature
+ * schemes, `X25519MLKEM768` group) so a classical JSSE can never be selected
+ * by provider order. Fail-closed: any missing or unreadable material raises
+ * [MissingCredentialException] so the service never talks to the gateway
  * without a client certificate and never uses a permissive TLS mode.
  */
 object MutualTlsClientFactory {
@@ -24,21 +27,22 @@ object MutualTlsClientFactory {
         trustStorePath: String,
         trustStorePassword: String,
     ): HttpClient {
+        PostQuantumTls.install()
         val keyManagers = loadKeyStore(keyStorePath, keyStorePassword).let { store ->
-            KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm()).apply {
+            KeyManagerFactory.getInstance("PKIX", PostQuantumTls.JSSE_PROVIDER).apply {
                 init(store, keyStorePassword.toCharArray())
             }.keyManagers
         }
         val trustManagers = loadKeyStore(trustStorePath, trustStorePassword).let { store ->
-            TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm()).apply {
+            TrustManagerFactory.getInstance("PKIX", PostQuantumTls.JSSE_PROVIDER).apply {
                 init(store)
             }.trustManagers
         }
-        val sslContext = SSLContext.getInstance("TLS").apply {
+        val sslContext = SSLContext.getInstance("TLSv1.3", PostQuantumTls.JSSE_PROVIDER).apply {
             init(keyManagers, trustManagers, null)
         }
         val parameters = sslContext.defaultSSLParameters.apply {
-            protocols = arrayOf("TLSv1.3", "TLSv1.2")
+            protocols = arrayOf(PostQuantumTls.PROTOCOLS)
         }
         return HttpClient.newBuilder()
             .sslContext(sslContext)
