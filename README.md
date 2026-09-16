@@ -61,9 +61,9 @@ All configuration is supplied by container environment (no hard-coded secrets):
 
 ## Specs
 
-Behavior is governed by the OpenSpec capabilities in the superproject:
-`external-service-integration`, `backend-client-console`, and
-`deployment-infrastructure`.
+Behavior is governed by the Spec Kit features in the superproject:
+`005-external-service-integration`, `001-backend-client-console`, and
+`004-deployment-infrastructure`.
 
 ## Post-Quantum Transport
 
